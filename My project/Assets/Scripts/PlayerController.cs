@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
     // The InputAction we will read from
     private InputAction moveAction;
 
+    // Guard to avoid subscribing handlers multiple times
+    private bool moveHandlersRegistered = false;
+
     // Cached input value (x = left/right, y = forward/back)
     private Vector2 moveInput = Vector2.zero;
 
@@ -65,6 +68,9 @@ public class PlayerController : MonoBehaviour
                 moveAction = map.FindAction(moveActionName);
         }
 
+        // Try to ensure the move action is found and handlers are registered
+        EnsureMoveActionAndRegister();
+
         if (moveAction == null)
         {
             Debug.LogWarning($"PlayerController: Move action not found. Please add a PlayerInput component or assign an InputActionAsset and ensure action map '{actionMapName}' contains action '{moveActionName}'.");
@@ -73,21 +79,18 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        if (moveAction != null)
-        {
-            moveAction.Enable();
-            moveAction.performed += OnMove;
-            moveAction.canceled += OnMove;
-        }
+        // Ensure we have the action and handlers registered when the component is enabled
+        EnsureMoveActionAndRegister();
     }
 
     void OnDisable()
     {
-        if (moveAction != null)
+        if (moveAction != null && moveHandlersRegistered)
         {
             moveAction.performed -= OnMove;
             moveAction.canceled -= OnMove;
             moveAction.Disable();
+            moveHandlersRegistered = false;
         }
     }
 
@@ -119,8 +122,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Attempt to find the Move action (if not already) and register handlers once.
+    private void EnsureMoveActionAndRegister()
+    {
+        if (moveAction == null)
+        {
+            var playerInput = GetComponent<PlayerInput>();
+            if (playerInput != null)
+            {
+                moveAction = playerInput.actions?.FindAction(moveActionName);
+                if (moveAction == null)
+                    moveAction = playerInput.currentActionMap?.FindAction(moveActionName);
+            }
+
+            if (moveAction == null && actionsAsset != null)
+            {
+                var map = actionsAsset.FindActionMap(actionMapName);
+                if (map != null)
+                    moveAction = map.FindAction(moveActionName);
+            }
+        }
+
+        if (moveAction != null && !moveHandlersRegistered && enabled)
+        {
+            moveAction.performed += OnMove;
+            moveAction.canceled += OnMove;
+            moveAction.Enable();
+            moveHandlersRegistered = true;
+        }
+    }
+
     // Public setters/getters for runtime tuning
     public float Speed { get => speed; set => speed = Mathf.Max(0f, value); }
     public float MaxSpeed { get => maxSpeed; set => maxSpeed = Mathf.Max(0f, value); }
 }
-

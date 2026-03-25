@@ -274,7 +274,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!1 &330585543
@@ -761,7 +761,7 @@ GameObject:
   - component: {fileID: 1778584206}
   - component: {fileID: 1778584205}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -854,8 +854,8 @@ Transform:
   m_GameObject: {fileID: 1778584204}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.40141, y: 0.273, z: -8.82887}
-  m_LocalScale: {x: 9.6234, y: 0.105861686, z: 9.588558}
+  m_LocalPosition: {x: -1.2906, y: 0.27, z: 1.22}
+  m_LocalScale: {x: 24.59806, y: 0.105861686, z: 89.31142}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
